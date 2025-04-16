@@ -1,5 +1,6 @@
 import { createSlice } from "@reduxjs/toolkit";
 import { createAsyncThunk } from "@reduxjs/toolkit";
+// get books thunk
 export const getBooks = createAsyncThunk(
   "book/getBooks",
   async (_, thunkAPI) => {
@@ -14,7 +15,25 @@ export const getBooks = createAsyncThunk(
     }
   }
 );
+// Insert Books Thunk
+export const insertBooks = createAsyncThunk('book/insertBooks' ,async(datas, thunkAPI)=>{
+    const { rejectWithValue } = thunkAPI;
+    try{
+        const res = await fetch("http://localhost:3005/books" , {
+            method:'Post',
+            headers:{
+                'Content-Type':'application/json'
+            },
+            body: JSON.stringify(data)
+        });
+        const data = await res.json();
 
+      return data;
+        
+    }catch(error){
+        return rejectWithValue(error.message);
+    }
+})
 const bookSlice = createSlice({
   name: "book",
   initialState: {
