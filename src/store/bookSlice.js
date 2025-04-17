@@ -16,7 +16,7 @@ export const getBooks = createAsyncThunk(
   }
 );
 // Insert Books Thunk
-export const insertBooks = createAsyncThunk('book/insertBooks' ,async(datas, thunkAPI)=>{
+export const insertBooks = createAsyncThunk('book/insertBooks' ,async(data, thunkAPI)=>{
     const { rejectWithValue } = thunkAPI;
     try{
         const res = await fetch("http://localhost:3005/books" , {
@@ -26,6 +26,25 @@ export const insertBooks = createAsyncThunk('book/insertBooks' ,async(datas, thu
             },
             body: JSON.stringify(data)
         });
+         data = await res.json();
+
+      return data;
+        
+    }catch(error){
+        return rejectWithValue(error.message);
+    }
+})
+
+// Delete Books Thunk
+export const deleteBooks = createAsyncThunk('book/deleteBooks' ,async(id, thunkAPI)=>{
+    const { rejectWithValue } = thunkAPI;
+    try{
+        const res = await fetch(`http://localhost:3005/books/${id}` , {
+            method:'DELETE',
+            headers:{
+                'Content-Type':'application/json'
+            },
+        });
         const data = await res.json();
 
       return data;
@@ -34,6 +53,7 @@ export const insertBooks = createAsyncThunk('book/insertBooks' ,async(datas, thu
         return rejectWithValue(error.message);
     }
 })
+
 const bookSlice = createSlice({
   name: "book",
   initialState: {
@@ -42,6 +62,7 @@ const bookSlice = createSlice({
     error: null,
   },
   extraReducers: {
+    // Get Books
     [getBooks.pending]: (state, action) => {
       state.isLoading = true;
       state.error = null;
@@ -51,6 +72,34 @@ const bookSlice = createSlice({
       state.books = action.payload;
     },
     [getBooks.rejected]: (state, action) => {
+      state.isLoading = false;
+      state.error = action.payload;
+    },
+
+    // Insert Books
+    [insertBooks.pending]: (state, action) => {
+      state.isLoading = true;
+      state.error = null;
+    },
+    [insertBooks.fulfilled]: (state, action) => {
+      state.isLoading = false;
+      state.books = [...state.books, action.payload];
+    },
+    [insertBooks.rejected]: (state, action) => {
+      state.isLoading = false;
+      state.error = action.payload;
+    },
+
+    // Delete Books
+    [deleteBooks.pending]: (state, action) => {
+      state.isLoading = true;
+      state.error = null;
+    },
+    [deleteBooks.fulfilled]: (state, action) => {
+      state.isLoading = false;
+      state.books = state.books.filter((book) => book.id !== action.payload.id);
+    },
+    [deleteBooks.rejected]: (state, action) => {
       state.isLoading = false;
       state.error = action.payload;
     },

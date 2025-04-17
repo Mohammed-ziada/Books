@@ -1,6 +1,9 @@
 import React from "react";
-
+import { useDispatch } from "react-redux";
+import { deleteBooks } from "../../store/bookSlice";
 const BooksList = ({ isLoading, booksData }) => {
+  const dispatch = useDispatch();
+
   const BookList = booksData?.map((book) => (
     <li
       key={book.id}
@@ -11,7 +14,7 @@ const BooksList = ({ isLoading, booksData }) => {
         <button type="button" className="btn btn-primary">
           Read
         </button>
-        <button type="button" className="btn btn-danger">
+        <button type="button" className="btn btn-danger" onClick={() => dispatch(deleteBooks(book.id))}>
           Delete
         </button>
       </div>
