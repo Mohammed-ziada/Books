@@ -17,8 +17,9 @@ export const getBooks = createAsyncThunk(
 );
 // Insert Books Thunk
 export const insertBooks = createAsyncThunk('book/insertBooks' ,async(data, thunkAPI)=>{
-    const { rejectWithValue } = thunkAPI;
+    const { rejectWithValue ,getState } = thunkAPI;
     try{
+      data.author = getState().auth.author;
         const res = await fetch("http://localhost:3005/books" , {
             method:'Post',
             headers:{
@@ -53,7 +54,24 @@ export const deleteBooks = createAsyncThunk('book/deleteBooks' ,async(id, thunkA
         return rejectWithValue(error.message);
     }
 })
+// Read Books Thunk
+export const readBooks = createAsyncThunk('book/readBooks' ,async(id, thunkAPI)=>{
+const {rejectWithValue} = thunkAPI;
+try{
+  const res = await fetch(`http://localhost:3005/books/${id}` , {
+    method:'GET',
+    headers:{
+        'Content-Type':'application/json'
+    },
+});
+  const data = await res.json();
 
+  return data;
+}catch(error){
+    return rejectWithValue(error.message);
+  }
+
+})
 const bookSlice = createSlice({
   name: "book",
   initialState: {

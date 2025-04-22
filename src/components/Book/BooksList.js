@@ -1,8 +1,9 @@
 import React from "react";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { deleteBooks } from "../../store/bookSlice";
 const BooksList = ({ isLoading, booksData }) => {
   const dispatch = useDispatch();
+  const {isLoggedin} = useSelector((state)=>state.auth);
 
   const BookList = booksData?.map((book) => (
     <li
@@ -11,10 +12,10 @@ const BooksList = ({ isLoading, booksData }) => {
     >
       <div>{book.title}</div>
       <div className="btn-group" role="group">
-        <button type="button" className="btn btn-primary">
+        <button type="button" className="btn btn-primary" >
           Read
         </button>
-        <button type="button" className="btn btn-danger" onClick={() => dispatch(deleteBooks(book.id))}>
+        <button type="button" className="btn btn-danger" onClick={() => dispatch(deleteBooks(book.id))}  disabled={!isLoggedin}>
           Delete
         </button>
       </div>
